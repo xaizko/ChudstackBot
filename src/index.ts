@@ -8,7 +8,6 @@ import {
 	SlashCommandBuilder,
 	type ChatInputCommandInteraction
 } from "discord.js";
-import { CHUD_REMINDERS } from "./data/ChudReminders.js";
 import reminderCommand from "./commands/reminderCommand/reminder.js";
 import 'dotenv/config';
 
@@ -33,7 +32,7 @@ const client = new Client({
 	partials: [Partials.Channel, Partials.Message]
 });
 
-client.once("ready", async () => {
+client.once("clientReady", async () => {
 	if (!process.env.BOT_TOKEN || !process.env.CLIENT_ID) {
 		console.warn("Missing BOT_TOKEN or CLIENT_ID in environment; slash command registration skipped.");
 		return;
