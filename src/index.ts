@@ -1,6 +1,27 @@
-import { Client, GatewayIntentBits, Partials } from "discord.js";
+import {
+	Client,
+	Collection,
+	GatewayIntentBits,
+	Partials,
+	REST,
+	Routes,
+	SlashCommandBuilder,
+	type ChatInputCommandInteraction
+} from "discord.js";
 import { CHUD_REMINDERS } from "./data/ChudReminders.js";
+import reminderCommand from "./commands/reminderCommand/reminder.js";
 import 'dotenv/config';
+
+type SlashCommand = {
+	data: SlashCommandBuilder;
+	execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
+};
+
+// Set to store commands
+const commands = new Collection<string, SlashCommand>();
+commands.set(reminderCommand.data.name, reminderCommand);
+
+const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN ?? "");
 
 const client = new Client({
 	intents: [
@@ -12,14 +33,41 @@ const client = new Client({
 	partials: [Partials.Channel, Partials.Message]
 });
 
-client.on("messageCreate", (message) => {
-	if (message.author.bot) return;
-	if (!client.user) return;
+client.once("ready", async () => {
+	if (!process.env.BOT_TOKEN || !process.env.CLIENT_ID) {
+		console.warn("Missing BOT_TOKEN or CLIENT_ID in environment; slash command registration skipped.");
+		return;
+	}
 
-	if (message.mentions.has(client.user)) {
-		const randomIndex = Math.floor(Math.random() * CHUD_REMINDERS.length);
-		const reminder = CHUD_REMINDERS[randomIndex] as string;
-		message.channel.send(reminder);
+	try {
+		const payload = [...commands.values()].map((command) => command.data.toJSON());
+
+		if (!process.env.GUILD_ID) {
+			console.warn("Missing GUILD_ID, modify your .env file");
+			return;
+		}
+
+		await rest.put(
+			Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
+			{ body: payload }
+		);
+
+		console.log("Command registration complete.");
+	} catch (error) {
+		console.error("Failed to register slash commands:", error);
+	}
+});
+
+client.on("interactionCreate", async (interaction) => {
+	if (!interaction.isChatInputCommand()) return;
+
+	const command = commands.get(interaction.commandName);
+	if (!command) return;
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(`Error executing command ${interaction.commandName}:`, error);
 	}
 });
 

@@ -1,5 +1,7 @@
 {
 	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./dist",
 		"target": "ESNext",
 		"module": "NodeNext",
 		"moduleResolution": "NodeNext",
@@ -8,5 +10,7 @@
 		"strict": true,
 		"skipLibCheck": true,
 		"sourceMap": true
-	}
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["dist", "node_modules", "src/**/*.js", "src/**/*.js.map"]
 }
