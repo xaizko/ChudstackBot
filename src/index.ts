@@ -46,6 +46,7 @@ async function loadCommands() {
 
 	for (const entry of folderEntries) {
 		const commandFolderPath = path.join(foldersPath, entry);
+		// .js because the .ts files get translated to .js
 		const commandFiles = (fs.readdirSync(commandFolderPath)).filter((file) => file.endsWith(".js"));
 
 		for (const file of commandFiles) {
@@ -94,6 +95,15 @@ client.on("interactionCreate", async (interaction) => {
 		console.error(`Error executing command ${interaction.commandName}:`, error);
 	}
 });
+
+// Reacts with metro chud emoji if metro mentioned
+client.on("messageCreate", message => {
+	if (message.author.bot) return;
+
+	if (message.content.toLowerCase().includes("metro")) {
+		message.react('1495344198151311502');
+	}
+})
 
 function loadBot() {
 	client.login(process.env.BOT_TOKEN);
