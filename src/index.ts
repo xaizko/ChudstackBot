@@ -33,18 +33,13 @@ const client = new Client({
 });
 
 client.once("clientReady", async () => {
-	if (!process.env.BOT_TOKEN || !process.env.CLIENT_ID) {
-		console.warn("Missing BOT_TOKEN or CLIENT_ID in environment; slash command registration skipped.");
+	if (!process.env.BOT_TOKEN || !process.env.CLIENT_ID || !process.env.GUILD_ID) {
+		console.warn("Missing BOT_TOKEN or CLIENT_ID or GUIL_ID in environment; slash command registration skipped.");
 		return;
 	}
 
 	try {
 		const payload = [...commands.values()].map((command) => command.data.toJSON());
-
-		if (!process.env.GUILD_ID) {
-			console.warn("Missing GUILD_ID, modify your .env file");
-			return;
-		}
 
 		await rest.put(
 			Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
