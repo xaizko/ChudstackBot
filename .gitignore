@@ -1,1 +1,8 @@
 .env
+
+# TypeScript build output
+dist/
+
+# .JS files to ignore
+src/**/*.js
+src/**/*.js.map
