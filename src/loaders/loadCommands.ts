@@ -15,8 +15,8 @@ export async function loadCommands(client: BotClient) {
 		const commandFolderPath = path.join(foldersPath, entry);
 		// .js because the .ts files get translated to .js
 		const commandFiles = fs
-            .readdirSync(commandFolderPath)
-            .filter((file) => file.endsWith(".js"));
+			.readdirSync(commandFolderPath)
+			.filter((file) => file.endsWith(".js"));
 
 		for (const file of commandFiles) {
 			const filePath = path.join(commandFolderPath, file);
