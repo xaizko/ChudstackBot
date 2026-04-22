@@ -12,4 +12,5 @@ export const CHUD_REMINDERS = [
 	"🧠  Chudstack Reminder: Always set channel status before queueing! 🎉 ",
 	"🧠  Chudstack Reminder: Always blame the randoms! 🫵",
 	"🧠  Chudstack Reminder: If someone has lower KP than you everything wrong is their fault! 🥶 ",
+	"🧠  Chudstack Reminder: Deadlock first, Homework second, Shower last. 🤓",
 ] as const;
