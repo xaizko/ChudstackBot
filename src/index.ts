@@ -5,8 +5,6 @@ import {
 	Partials,
 	REST,
 	Routes,
-	SlashCommandBuilder,
-	type ChatInputCommandInteraction
 } from "discord.js";
 import 'dotenv/config';
 import { loadCommands } from "./loaders/loadCommands.js";
