@@ -10,6 +10,7 @@ import {
 } from "discord.js";
 import 'dotenv/config';
 import { loadCommands } from "./loaders/loadCommands.js";
+import { loadDb } from "./loaders/loadDb.js"
 import { loadEvents } from "./loaders/loadEvents.js";
 import { SlashCommand } from "./types/command.js";
 
@@ -35,6 +36,7 @@ async function main() {
 
 	await loadCommands(client);
 	await loadEvents(client);
+	await loadDb();
 
 	// Command registration
     client.once("clientReady", async () => {
