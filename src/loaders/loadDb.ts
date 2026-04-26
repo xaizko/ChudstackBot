@@ -7,7 +7,7 @@ db.pragma("foreign_keys = ON");
 export async function loadDb() {
 	const schema = `
 		CREATE TABLE IF NOT EXISTS users (
-			discord_id TEXT PRIMARY KEY,
+			discord_id TEXT PRIMARY KEY
 		);
 
 		CREATE TABLE IF NOT EXISTS stats (
