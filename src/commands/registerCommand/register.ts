@@ -1,5 +1,21 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
 import { getSteam32Id } from "../../utility/getSteam32Id.js";
+import { db } from "../../loaders/loadDb.js";
+
+const ensureUser = db.prepare(`
+			      INSERT INTO users (discord_id) VALUES (?)
+			      ON CONFLICT(discord_id) DO NOTHING
+			      `);
+
+const ensureStats = db.prepare(`
+			       INSERT INTO stats (discord_id) VALUES (?)
+			       ON CONFLICT(discord_id) DO NOTHING
+			       `);
+
+const ensureSteamProfile = db.prepare(`
+				      INSERT INTO profile_links (discord_id, steam_id) VALUES (?, ?)
+				      ON CONFLICT(discord_id) DO UPDATE SET steam_id = excluded.steam_id
+				      `)
 
 const registerCommand = {
 	data: new SlashCommandBuilder()
@@ -11,15 +27,25 @@ const registerCommand = {
 					.setRequired(true)
 				),
 		async execute(interaction: ChatInputCommandInteraction) {
-			const steamId64 = interaction.options.getString("steamid", true).trim();
+			const steam64Id = interaction.options.getString("steamid", true).trim();
 
-			if (!/^\d{17}$/.test(steamId64)) {
+			if (!/^\d{17}$/.test(steam64Id)) {
 				await interaction.reply("Please enter a SteamID64");
 				return;
 			}
-			const steam32Id = await getSteam32Id(BigInt(steamId64));
+			const steam32Id = await getSteam32Id(BigInt(steam64Id));
 
-			await interaction.reply(`Your Steam32Id is ${steam32Id}`);
+			const user = interaction.user;
+			const discordId = user.id;
+			
+			const tx = db.transaction(() => {
+				ensureUser.run(discordId);
+				ensureStats.run(discordId);
+				ensureSteamProfile.run(discordId, steam32Id);
+			});
+			tx();
+
+			await interaction.reply(`Successfully added ${user} to database`);
 		}
 };
 
