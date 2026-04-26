@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
-import { getSteam32Id } from "../../utility/getSteamId.js";
+import { getSteam32Id } from "../../utility/getSteam32Id.js";
 
 const registerCommand = {
 	data: new SlashCommandBuilder()
