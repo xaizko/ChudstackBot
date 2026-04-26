@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-export const db = new Database("chudstack.db");
+export const db = new Database("src/data/chudstack.db");
 
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
