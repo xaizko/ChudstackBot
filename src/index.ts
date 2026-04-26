@@ -32,7 +32,7 @@ async function main() {
 	// Collection to store commands
 	client.commands = new Collection();
 
-	await loadDb();
+	loadDb();
 	await loadCommands(client);
 	await loadEvents(client);
 

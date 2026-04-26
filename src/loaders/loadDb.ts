@@ -4,7 +4,7 @@ export const db = new Database("src/data/chudstack.db");
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
-export async function loadDb() {
+export function loadDb() {
 	const schema = `
 		CREATE TABLE IF NOT EXISTS users (
 			discord_id TEXT PRIMARY KEY
