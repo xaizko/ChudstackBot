@@ -3,18 +3,18 @@ import { getSteam32Id } from "../../utility/getSteam32Id.js";
 import { db } from "../../loaders/loadDb.js";
 
 const ensureUser = db.prepare(`
-			      INSERT INTO users (discord_id) VALUES (?)
-			      ON CONFLICT(discord_id) DO NOTHING
+				      INSERT INTO users (discord_id) VALUES (?)
+				      ON CONFLICT(discord_id) DO NOTHING
 			      `);
 
 const ensureStats = db.prepare(`
-			       INSERT INTO stats (discord_id) VALUES (?)
-			       ON CONFLICT(discord_id) DO NOTHING
+				       INSERT INTO stats (discord_id) VALUES (?)
+				       ON CONFLICT(discord_id) DO NOTHING
 			       `);
 
 const ensureSteamProfile = db.prepare(`
-				      INSERT INTO profile_links (discord_id, steam_id) VALUES (?, ?)
-				      ON CONFLICT(discord_id) DO UPDATE SET steam_id = excluded.steam_id
+					      INSERT INTO profile_links (discord_id, steam_id) VALUES (?, ?)
+					      ON CONFLICT(discord_id) DO UPDATE SET steam_id = excluded.steam_id
 				      `)
 
 const registerCommand = {
