@@ -1,4 +1,5 @@
 .env
+src/data/chudstack.db*
 
 # TypeScript build output
 dist/
