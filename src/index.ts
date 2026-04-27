@@ -19,7 +19,7 @@ export type BotClient = Client & {
 const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN ?? "");
 
 async function main() {
-    const client = new Client({
+	const client = new Client({
 		intents: [
 			GatewayIntentBits.Guilds,
 			GatewayIntentBits.GuildMembers,
@@ -37,7 +37,7 @@ async function main() {
 	await loadEvents(client);
 
 	// Command registration
-    client.once("clientReady", async () => {
+	client.once("clientReady", async () => {
 		if (!process.env.BOT_TOKEN || !process.env.CLIENT_ID || !process.env.GUILD_ID) {
 			console.warn("Missing BOT_TOKEN or CLIENT_ID or GUILD_ID in environment; slash command registration skipped.");
 			return;
@@ -57,7 +57,7 @@ async function main() {
 		}
 	});
 
-    await client.login(process.env.BOT_TOKEN);
+	await client.login(process.env.BOT_TOKEN);
 }
 
 main().catch((error) => {
