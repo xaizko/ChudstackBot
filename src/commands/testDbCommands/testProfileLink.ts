@@ -2,6 +2,7 @@ import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
 import { db } from "../../loaders/loadDb.js";
 
 
+// Query for getting steam id by discord id
 const getProfile = db.prepare(`
 						 SELECT steam_id
 						 FROM profile_links

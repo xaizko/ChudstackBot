@@ -2,16 +2,19 @@ import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
 import { getSteam32Id } from "../../utility/getSteam32Id.js";
 import { db } from "../../loaders/loadDb.js";
 
+// Inserts user's discord id into the database
 const ensureUser = db.prepare(`
 				      INSERT INTO users (discord_id) VALUES (?)
 				      ON CONFLICT(discord_id) DO NOTHING
-			      `);
+				`);
 
+// creates the default stats for a user
 const ensureStats = db.prepare(`
 				       INSERT INTO stats (discord_id) VALUES (?)
 				       ON CONFLICT(discord_id) DO NOTHING
 			       `);
 
+// Links the user's discord id to a steam id
 const ensureSteamProfile = db.prepare(`
 					      INSERT INTO profile_links (discord_id, steam_id) VALUES (?, ?)
 					      ON CONFLICT(discord_id) DO UPDATE SET steam_id = excluded.steam_id
@@ -29,6 +32,7 @@ const registerCommand = {
 		async execute(interaction: ChatInputCommandInteraction) {
 			const steam64Id = interaction.options.getString("steamid", true).trim();
 
+			// Uses regex to check whether the input is 17 digits
 			if (!/^\d{17}$/.test(steam64Id)) {
 				await interaction.reply("Please enter a SteamID64");
 				return;
@@ -38,6 +42,7 @@ const registerCommand = {
 			const user = interaction.user;
 			const discordId = user.id;
 			
+			// Executes DB queries 
 			const tx = db.transaction(() => {
 				ensureUser.run(discordId);
 				ensureStats.run(discordId);
