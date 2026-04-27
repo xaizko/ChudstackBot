@@ -1,5 +1,3 @@
-import type { BotClient } from "../index.js";
-
 export type BotEvent = {
     name: string;
     once?: boolean;
