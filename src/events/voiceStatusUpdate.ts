@@ -27,6 +27,7 @@ const voiceStatusUpdate: BotEvent = {
 		const timer = idleDisconnectTimers.get(guildID);
 		const botIsAlone = channel.members.has(botId) && channel.members.size <= 1;
 
+		// Clears timer if bot is not alone
 		if (!botIsAlone) {
 			if (timer) {
 				clearTimeout(timer);
@@ -35,8 +36,10 @@ const voiceStatusUpdate: BotEvent = {
 			return;
 		}
 
+		// Do nothing if there is already a timer
 		if (timer) return;
 
+		// Sets a timer if bot is alone
 		const LOCKOUT_TIMER = 5 * 60 * 1000;
 		idleDisconnectTimers.set(
 			guildID,
