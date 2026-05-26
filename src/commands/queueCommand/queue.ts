@@ -47,10 +47,10 @@ const queueCommand = {
 							if (connection.state.status !== VoiceConnectionStatus.Destroyed) {
 								connection.destroy();
 
-								interaction.followUp({
+								interaction.reply({
 									content: `Chudstack was closed because no one joined ${voiceChannel} in 5 minutes`,
 									ephemeral: false
-								}).catch(console.error);
+								});
 							}
 						}
 					}, FIVE_MINUTES);
