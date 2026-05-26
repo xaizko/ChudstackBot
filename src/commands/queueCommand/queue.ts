@@ -1,4 +1,4 @@
-import { ButtonBuilder, SlashCommandBuilder, ChatInputCommandInteraction, ChannelType, ButtonStyle, ActionRow, ActionRowBuilder, MessageActionRowComponentBuilder } from "discord.js";
+import { ButtonBuilder, SlashCommandBuilder, ChatInputCommandInteraction, ChannelType, ButtonStyle, ActionRowBuilder, MessageActionRowComponentBuilder } from "discord.js";
 
 const queueCommand = {
 	data: new SlashCommandBuilder()
