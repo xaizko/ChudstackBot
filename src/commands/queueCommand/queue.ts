@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, ChannelType } from "discord.js";
+import { ButtonBuilder, SlashCommandBuilder, ChatInputCommandInteraction, ChannelType, ButtonStyle, ActionRow, ActionRowBuilder, MessageActionRowComponentBuilder } from "discord.js";
 
 const queueCommand = {
 	data: new SlashCommandBuilder()
@@ -14,14 +14,23 @@ const queueCommand = {
 			const timeObject = new Date();
 			const timeStarted = Math.floor(timeObject.getTime() / 1000); // Milli to Seconds
 
-			await interaction.reply(`${user} started a chudstack at <t:${timeStarted}> in ${interaction.options.getChannel("channel")}`);
+			const joinButton = new ButtonBuilder()
+						.setCustomId("join")
+						.setLabel("Join Chudstack")
+						.setStyle(ButtonStyle.Success);
+			const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(joinButton);
+
+			await interaction.reply({
+				content: `${user} started a chudstack at <t:${timeStarted}> in ${interaction.options.getChannel("channel")}`,
+				components: [row],
+			});
 
 			// TODO:
 			// Track start and end time
 			// Ping role? 
 			// Bot joins VC?
 			// Detect people in VC?
-		}
+		},
 };
 
 export default queueCommand;
