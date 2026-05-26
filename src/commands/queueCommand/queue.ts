@@ -6,9 +6,12 @@ import {
 	ChannelType, 
 	MessageActionRowComponentBuilder ,
 	SlashCommandBuilder,
-    VoiceChannel,
+	VoiceChannel,
 } from "discord.js";
-import { joinVoiceChannel, VoiceConnectionStatus } from "@discordjs/voice";
+import { 
+	joinVoiceChannel, 
+	VoiceConnectionStatus,
+} from "@discordjs/voice";
 
 const queueCommand = {
 	data: new SlashCommandBuilder()
@@ -25,13 +28,7 @@ const queueCommand = {
 			const timeObject = new Date();
 			const timeStarted = Math.floor(timeObject.getTime() / 1000); // Milli to Seconds
 
-			const joinButton = new ButtonBuilder()
-						.setCustomId("join")
-						.setLabel("Join Chudstack")
-						.setStyle(ButtonStyle.Success);
-			const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(joinButton);
-
-			
+			// Join VC
 			if (voiceChannel && voiceChannel.type === ChannelType.GuildVoice) {
 				const connection = joinVoiceChannel({
 					channelId: voiceChannel.id,
@@ -40,8 +37,9 @@ const queueCommand = {
 				})
 
 				if (voiceChannel.members.size <= 1) {
-					const FIVE_MINUTES = 5 * 60 * 1000;
+					const LOCKOUT_TIMER = 5 * 60 * 1000;
 
+					// Disconnects if no one joins initially
 					setTimeout(() => {
 						if (voiceChannel.members.size <= 1) {
 							if (connection.state.status !== VoiceConnectionStatus.Destroyed) {
@@ -53,10 +51,18 @@ const queueCommand = {
 								});
 							}
 						}
-					}, FIVE_MINUTES);
+					}, LOCKOUT_TIMER);
 				}
 			}
 
+			// Button to join VC
+			const joinButton = new ButtonBuilder()
+						.setCustomId("join")
+						.setLabel("Join Chudstack")
+						.setStyle(ButtonStyle.Success);
+			const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(joinButton);
+
+			// Reply Message
 			await interaction.reply({
 				content: `${user} started a chudstack at <t:${timeStarted}> in ${voiceChannel}`,
 				components: [row],
