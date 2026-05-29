@@ -67,13 +67,6 @@ const queueCommand = {
 				content: `${user} started a chudstack at <t:${timeStarted}> in ${voiceChannel}`,
 				components: [row],
 			});
-
-			// TODO:
-			// Track start and end time
-			// Ping role? 
-			// Bot joins VC?
-			// Detect people in VC?
-
 		},
 };
 
