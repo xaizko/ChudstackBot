@@ -23,6 +23,15 @@ export function loadDb() {
 			steam_id  TEXT,
 			FOREIGN KEY (discord_id) REFERENCES users(discord_id) ON DELETE CASCADE
 		);
+
+		CREATE TABLE IF NOT EXISTS chudstack_sessions(
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			guild_id TEXT NOT NULL,
+			channel_id TEXT NOT NULL,
+			start_time INTEGER NOT NULL,
+			end_time INTEGER,
+			duration_seconds INTEGER
+		);
 	`;
 
 	db.exec(schema);

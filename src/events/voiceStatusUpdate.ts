@@ -2,6 +2,7 @@ import { Events, type VoiceState } from "discord.js";
 import { getVoiceConnection, VoiceConnectionStatus } from "@discordjs/voice";
 import type { BotEvent } from "../types/event.js";
 import type { BotClient } from "../index.js";
+import { closeChudstackSession } from "../features/chudstackSession.js";
 
 const idleDisconnectTimers = new Map<string, NodeJS.Timeout>();
 
@@ -54,6 +55,7 @@ const voiceStatusUpdate: BotEvent = {
 					channel.members.has(botId) &&
 					channel.members.size <= 1
 				) {
+					closeChudstackSession(guildID, channel.id);
 					activeConnection.destroy();
 				}
 			}, LOCKOUT_TIMER),

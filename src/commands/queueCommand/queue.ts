@@ -10,8 +10,8 @@ import {
 } from "discord.js";
 import { 
 	joinVoiceChannel, 
-	VoiceConnectionStatus,
 } from "@discordjs/voice";
+import { startChudstackSession } from "../../features/chudstackSession.js";
 
 const queueCommand = {
 	data: new SlashCommandBuilder()
@@ -25,34 +25,16 @@ const queueCommand = {
 		async execute(interaction: ChatInputCommandInteraction) {
 			const user = interaction.user;
 			const voiceChannel = interaction.options.getChannel("channel") as VoiceChannel;
-			const timeObject = new Date();
-			const timeStarted = Math.floor(timeObject.getTime() / 1000); // Milli to Seconds
+			const timeStarted = Math.floor(Date.now() / 1000);
 
-			// Join VC
 			if (voiceChannel && voiceChannel.type === ChannelType.GuildVoice) {
-				const connection = joinVoiceChannel({
+				// Opens voice connection and starts session
+				joinVoiceChannel({
 					channelId: voiceChannel.id,
 					guildId: interaction.guildId!,
 					adapterCreator: interaction.guild!.voiceAdapterCreator,
 				})
-
-				if (voiceChannel.members.size <= 1) {
-					const LOCKOUT_TIMER = 5 * 60 * 1000;
-
-					// Disconnects if no one joins initially
-					setTimeout(() => {
-						if (voiceChannel.members.size <= 1) {
-							if (connection.state.status !== VoiceConnectionStatus.Destroyed) {
-								connection.destroy();
-
-								interaction.reply({
-									content: `Chudstack was closed because no one joined ${voiceChannel} in 5 minutes`,
-									ephemeral: false
-								});
-							}
-						}
-					}, LOCKOUT_TIMER);
-				}
+				startChudstackSession(interaction.guildId!, voiceChannel.id, timeStarted);
 			}
 
 			// Button to join VC
