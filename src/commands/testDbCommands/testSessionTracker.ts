@@ -7,6 +7,13 @@ const getChudstackSession = db.prepare(`
 	WHERE id = ?
 `);
 
+const getChudstackSessionParticipants = db.prepare(`
+	SELECT discord_id, joined_at
+	FROM chudstack_session_participants
+	WHERE session_id = ?
+	ORDER BY joined_at ASC, discord_id ASC
+`);
+
 const testSessionTrackerCommand = {
 	data: new SlashCommandBuilder()
 		.setName("testsessiontracker")
@@ -29,6 +36,10 @@ const testSessionTrackerCommand = {
 				duration_seconds: number | null;
 			}
 			| undefined;
+		const participants = getChudstackSessionParticipants.all(sessionId) as Array<{
+			discord_id: string;
+			joined_at: number;
+		}>;
 
 		if (!session) {
 			await interaction.reply(`No chudstack session found for id ${sessionId}.`);
@@ -38,6 +49,11 @@ const testSessionTrackerCommand = {
 		const startTime = `<t:${session.start_time}>`;
 		const endTime = session.end_time ? `<t:${session.end_time}>` : "still running";
 		const duration = session.duration_seconds === null ? "still running" : `${session.duration_seconds}s`;
+		const participantList = participants.length
+			? participants
+				.map((participant) => `<@${participant.discord_id}> (<t:${participant.joined_at}:f>)`)
+				.join("\n")
+			: "None yet";
 
 		await interaction.reply([
 			`Session #${session.id}`,
@@ -46,6 +62,7 @@ const testSessionTrackerCommand = {
 			`Start: ${startTime}`,
 			`End: ${endTime}`,
 			`Duration: ${duration}`,
+			`Participants:\n${participantList}`,
 		].join("\n"));
 	},
 };

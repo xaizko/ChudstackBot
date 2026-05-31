@@ -32,6 +32,14 @@ export function loadDb() {
 			end_time INTEGER,
 			duration_seconds INTEGER
 		);
+
+		CREATE TABLE IF NOT EXISTS chudstack_session_participants(
+			session_id INTEGER NOT NULL,
+			discord_id TEXT NOT NULL,
+			joined_at INTEGER NOT NULL,
+			PRIMARY KEY (session_id, discord_id),
+			FOREIGN KEY (session_id) REFERENCES chudstack_sessions(id) ON DELETE CASCADE
+		);
 	`;
 
 	db.exec(schema);
