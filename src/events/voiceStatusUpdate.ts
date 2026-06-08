@@ -5,6 +5,7 @@ import type { BotClient } from "../index.js";
 import {
 	closeChudstackSession,
 	recordChudstackParticipant,
+	recordChudstackParticipantLeave,
 } from "../features/chudstackSession.js";
 
 const idleDisconnectTimers = new Map<string, NodeJS.Timeout>();
@@ -19,9 +20,19 @@ const voiceStatusUpdate: BotEvent = {
 		const client = newState.client as BotClient;
 		const botId = client.user?.id;
 		const joinedChannelId = newState.channelId;
+		const leftChannelId = oldState.channelId;
 		const didJoinChannel = joinedChannelId && joinedChannelId !== oldState.channelId;
+		const didLeaveChannel = leftChannelId && leftChannelId !== newState.channelId;
 
-		if (didJoinChannel && !newState.member?.user.bot) {
+		if (didLeaveChannel && !newState.member?.user.bot && leftChannelId) {
+			recordChudstackParticipantLeave(
+				guildID,
+				leftChannelId,
+				newState.id,
+			);
+		}
+
+		if (didJoinChannel && !newState.member?.user.bot && joinedChannelId) {
 			recordChudstackParticipant(
 				guildID,
 				joinedChannelId,

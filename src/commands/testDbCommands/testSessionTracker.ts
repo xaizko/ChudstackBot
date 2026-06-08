@@ -8,7 +8,7 @@ const getChudstackSession = db.prepare(`
 `);
 
 const getChudstackSessionParticipants = db.prepare(`
-	SELECT discord_id, joined_at
+	SELECT discord_id, joined_at, current_joined_at, accumulated_seconds
 	FROM chudstack_session_participants
 	WHERE session_id = ?
 	ORDER BY joined_at ASC, discord_id ASC
@@ -39,6 +39,8 @@ const testSessionTrackerCommand = {
 		const participants = getChudstackSessionParticipants.all(sessionId) as Array<{
 			discord_id: string;
 			joined_at: number;
+			current_joined_at: number | null;
+			accumulated_seconds: number;
 		}>;
 
 		if (!session) {
@@ -49,9 +51,15 @@ const testSessionTrackerCommand = {
 		const startTime = `<t:${session.start_time}>`;
 		const endTime = session.end_time ? `<t:${session.end_time}>` : "still running";
 		const duration = session.duration_seconds === null ? "still running" : `${session.duration_seconds}s`;
+		const now = Math.floor(Date.now() / 1000);
 		const participantList = participants.length
 			? participants
-				.map((participant) => `<@${participant.discord_id}> (<t:${participant.joined_at}:f>)`)
+				.map((participant) => {
+					const activeSeconds = participant.current_joined_at === null ? 0 : Math.max(0, now - participant.current_joined_at);
+					const totalSeconds = participant.accumulated_seconds + activeSeconds;
+					const status = participant.current_joined_at === null ? "left" : `in vc since <t:${participant.current_joined_at}:f>`;
+					return `<@${participant.discord_id}> - ${totalSeconds}s total, ${status}`;
+				})
 				.join("\n")
 			: "None yet";
 
