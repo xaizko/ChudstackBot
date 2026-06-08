@@ -4,6 +4,13 @@ export const db = new Database("src/data/chudstack.db");
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
+function ensureColumn(tableName: string, columnName: string, columnDefinition: string) {
+	const columns = db.prepare(`PRAGMA table_info(${tableName})`).all() as Array<{ name: string }>;
+	if (columns.some((column) => column.name === columnName)) return;
+
+	db.exec(`ALTER TABLE ${tableName} ADD COLUMN ${columnDefinition}`);
+}
+
 export function loadDb() {
 	const schema = `
 		CREATE TABLE IF NOT EXISTS users (
@@ -37,12 +44,16 @@ export function loadDb() {
 			session_id INTEGER NOT NULL,
 			discord_id TEXT NOT NULL,
 			joined_at INTEGER NOT NULL,
+			current_joined_at INTEGER,
+			accumulated_seconds INTEGER NOT NULL DEFAULT 0,
 			PRIMARY KEY (session_id, discord_id),
 			FOREIGN KEY (session_id) REFERENCES chudstack_sessions(id) ON DELETE CASCADE
 		);
 	`;
 
 	db.exec(schema);
+	ensureColumn("chudstack_session_participants", "current_joined_at", "current_joined_at INTEGER");
+	ensureColumn("chudstack_session_participants", "accumulated_seconds", "accumulated_seconds INTEGER NOT NULL DEFAULT 0");
 }
 
 
